@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Gerador Magnata</title>
+    <style>
+        body { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .admin-box { width: 400px; border: 2px solid #fff; padding: 30px; border-radius: 15px; text-align: center; }
+        h2 { font-size: 18px; text-transform: uppercase; border-bottom: 1px solid #fff; padding-bottom: 15px; margin-bottom: 20px; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #fff; color: #fff; border-radius: 8px; box-sizing: border-box; outline: none; }
+        .btn-random { color: #aaa; font-size: 11px; cursor: pointer; text-decoration: underline; display: block; margin-bottom: 10px; }
+        .btn-create { width: 100%; padding: 15px; background: #ffcc00; color: #000; border: none; font-weight: bold; border-radius: 8px; cursor: pointer; text-transform: uppercase; margin-top: 15px; }
+        label { font-size: 12px; display: block; text-align: left; color: #ffcc00; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-box">
+        <h2>GERADOR DE KEYS - ADMIN</h2>
+        
+        <input type="text" id="adminUser" placeholder="Nome do Cliente">
+        
+        <span class="btn-random" onclick="generateRandom()">Gerar Key Aleatória</span>
+        <input type="text" id="adminKey" placeholder="Escreva ou Gere a Key">
+        
+        <label>DURAÇÃO DO ACESSO:</label>
+        <select id="duration">
+            <option value="1">1 Dia</option>
+            <option value="2">2 Dias</option>
+            <option value="3">3 Dias</option>
+            <option value="5">5 Dias</option>
+            <option value="7">7 Dias (1 Semana)</option>
+            <option value="15">15 Dias</option>
+            <option value="20">20 Dias</option>
+            <option value="9999">PERMANENTE (PERM)</option>
+        </select>
+
+        <button class="btn-create" onclick="saveKey()">CRIAR KEY E VALIDAR</button>
+    </div>
+
+    <script>
+        function generateRandom() {
+            const random = Math.random().toString(36).substring(2, 7).toUpperCase();
+            document.getElementById('adminKey').value = `MAG-${random}`;
+        }
+
+        function saveKey() {
+            const user = document.getElementById('adminUser').value;
+            const key = document.getElementById('adminKey').value;
+            const days = parseInt(document.getElementById('duration').value);
+
+            if(!user || !key) return alert("Preencha Usuário e Key!");
+
+            // Calcula a data de expiração em milissegundos
+            const expiration = Date.now() + (days * 24 * 60 * 60 * 1000);
+
+            let db = JSON.parse(localStorage.getItem('magnata_keys') || '[]');
+            db.push({ user, key, expiration, isPerm: days > 1000 });
+            localStorage.setItem('magnata_keys', JSON.stringify(db));
+
+            alert(`Key Gerada!\nUsuário: ${user}\nValidade: ${days} dia(s)`);
+        }
+    </script>
+</body>
+</html>
